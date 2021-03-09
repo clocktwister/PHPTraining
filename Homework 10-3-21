@@ -1,0 +1,111 @@
+
+
+<?php
+
+// Add vagrant MySQL connection details
+$servername = "localhost";
+$username = "vagrant";
+$password = "vagrant";
+$dbname = "phpcourse";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+//HW 1 Prepared Statements
+// prepare and bind
+$stmt = $conn->prepare("INSERT INTO customers (firstname, lastname) VALUES (?, ?)");
+$stmt->bind_param("ss", $firstname, $lastname);
+
+// set parameters and execute
+$firstname = "Bill";
+$lastname = "Gates";
+$stmt->execute();
+
+$firstname = "Larry";
+$lastname = "Page";
+$stmt->execute();
+echo "This will add new records, example of preapred statement";
+echo "<br>";
+echo "New records created successfully";
+
+// HW 2 Stored Procedure (not working)
+
+// Add vagrant MySQL connection details
+$servername = "localhost";
+$username = "vagrant";
+$password = "vagrant";
+$dbname = "phpcourse";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+$conn->query("CREATE PROCEDURE NEWUSER(IN firstname_VAL STRING, lastname_VAL STRING) BEGIN INSERT INTO customers(firstname,lastname) VALUES(firstname_val,lastname_val)");
+$conn->query("CALL newuser(Vinton,Cerf)");
+
+//HW 3 Transaction
+
+
+
+try {
+    // Add vagrant MySQL connection details
+$servername = "localhost";
+$username = "vagrant";
+$password = "vagrant";
+$dbname = "phpcourse";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+    $conn->begin_transaction();
+
+    $sql = "INSERT INTO customers (firstname, lastname) VALUES (?, ?)";
+    $stmt2 = $conn->prepare($sql);
+    $stmt2->bind_param("ss", $firstname1, $lastname1);
+    $firstname1 = "George";
+    $lastname1 = "Boole";
+    $stmt2->execute();
+
+    $conn->commit();
+} catch (PDOException $e) {
+    $conn->rollback();
+}
+
+
+
+
+$stmt2->close();
+$stmt->close();
+
+$table = "SELECT * FROM customers";
+$results = mysqli_query($conn, $table);
+echo "<br>";
+echo "table border='1'";
+while ($row = mysqli_fetch_assoc($results)) {
+    echo "<tr>";
+    foreach ($row as $field => $value) {
+        echo "<td><br>" . $value . "</td>";
+    }
+    echo "</tr>";
+}
+echo "</table>";
+
+
+$conn->close();
+
+
+?>
+
+
+
